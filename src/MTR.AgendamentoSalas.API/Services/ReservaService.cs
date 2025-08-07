@@ -115,7 +115,7 @@ public class ReservaService(IReservaRepositorio reservaRepositorio) : IReservaSe
             retorno.AdicionaErro("Não é possível reservar para datas no passado.");
         }
 
-        if (reserva.Cafe is true && reserva.QuantidadePessoas is null || reserva.QuantidadePessoas == 0)
+        if (reserva.Cafe is true && reserva.QuantidadePessoas is null && reserva.QuantidadePessoas == 0)
         {
             retorno.AdicionaErro("Quando pedir café lembre-se de informar a quantidade de pessoas. ;-)");
         }
