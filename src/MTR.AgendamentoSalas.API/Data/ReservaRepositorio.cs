@@ -3,7 +3,7 @@ using MTR.AgendamentoSalas.API.Models;
 
 namespace MTR.AgendamentoSalas.API.Data;
 
-public class ReservaRepositorio(AppDbContexto contextoDb)
+public class ReservaRepositorio(AppDbContexto contextoDb) : IReservaRepositorio
 {
     private readonly AppDbContexto ContextoDb = contextoDb;
 
@@ -55,7 +55,8 @@ public class ReservaRepositorio(AppDbContexto contextoDb)
         {
             reservasConflitantes = reservasConflitantes
                 .Where(r => r.Id != id);
-        };
+        }
+        ;
 
         var retornoValidacao = reservasConflitantes.Any();
 
@@ -67,5 +68,19 @@ public class ReservaRepositorio(AppDbContexto contextoDb)
         ContextoDb.Reservas.Remove(reserva);
         await ContextoDb.SaveChangesAsync();
         return true;
+    }
+
+    public Task<List<Local>> ObterTodosLocais()
+    {
+        return ContextoDb.Locais
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public Task<List<Sala>> ObterTodasSalas()
+    {
+        return ContextoDb.Salas
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

@@ -4,8 +4,6 @@ using MTR.AgendamentoSalas.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 var stringConexao = builder.Configuration.GetConnectionString("banco-mysql");
 
 builder.Services.AddDbContext<AppDbContexto>(options =>
@@ -13,23 +11,29 @@ builder.Services.AddDbContext<AppDbContexto>(options =>
         mySqlOptions => mySqlOptions.EnableStringComparisonTranslations())
 );
 
-builder.Services.AddScoped<ReservaService>();
-builder.Services.AddScoped<ReservaRepositorio>();
+builder.Services.AddScoped<IReservaService, ReservaService>();
+builder.Services.AddScoped<IReservaRepositorio, ReservaRepositorio>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new() { Title = "Agendamento de Salas API", Version = "v1" });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

@@ -4,9 +4,9 @@ using MTR.AgendamentoSalas.API.Models;
 
 namespace MTR.AgendamentoSalas.API.Services;
 
-public class ReservaService(ReservaRepositorio reservaRepositorio)
+public class ReservaService(IReservaRepositorio reservaRepositorio) : IReservaService
 {
-    private readonly ReservaRepositorio _reservaRepositorio = reservaRepositorio;
+    private readonly IReservaRepositorio _reservaRepositorio = reservaRepositorio;
 
     private readonly string MENSAGEM_RESERVA = "O local {0} na sala {1} já possui reserva entre o periodo informado {2} e {3}";
 
@@ -22,7 +22,7 @@ public class ReservaService(ReservaRepositorio reservaRepositorio)
     public async Task<ResponseDto<Reserva>> Inserir(Reserva reserva)
     {
         var retorno = new ResponseDto<Reserva>();
-        validarEntradas(reserva, retorno);
+        ValidarEntradas(reserva, retorno);
 
         if (retorno.Erros.Any())
         {
@@ -42,7 +42,7 @@ public class ReservaService(ReservaRepositorio reservaRepositorio)
     public async Task<ResponseDto<Reserva>> Atualizar(int id, Reserva reserva)
     {
         var retorno = new ResponseDto<Reserva>();
-        validarEntradas(reserva, retorno);
+        ValidarEntradas(reserva, retorno);
 
         if (retorno.Erros.Any())
         {
@@ -72,13 +72,12 @@ public class ReservaService(ReservaRepositorio reservaRepositorio)
 
         await _reservaRepositorio.Atualizar(id, reservaLocalizada);
 
-
         retorno.Dados = reservaLocalizada;
 
         return retorno;
     }
 
-    private static void validarEntradas(Reserva reserva, ResponseDto<Reserva> retorno)
+    private static void ValidarEntradas(Reserva reserva, ResponseDto<Reserva> retorno)
     {
         if (reserva.DataInicio >= reserva.DataFim)
         {
@@ -101,5 +100,23 @@ public class ReservaService(ReservaRepositorio reservaRepositorio)
         var reservasConflitantes = await _reservaRepositorio.ConsultaReservaConflitante(reserva, id);
 
         return reservasConflitantes;
+    }
+
+    public async Task<ResponseDto<List<Local>>> ObterTodosLocais()
+    {
+        var retorno = new ResponseDto<List<Local>>
+        {
+            Dados = await _reservaRepositorio.ObterTodosLocais()
+        };
+        return retorno;
+    }
+
+    public async Task<ResponseDto<List<Sala>>> ObterTodasSalas()
+    {
+        var retorno = new ResponseDto<List<Sala>>
+        {
+            Dados = await _reservaRepositorio.ObterTodasSalas()
+        };
+        return retorno;
     }
 }
