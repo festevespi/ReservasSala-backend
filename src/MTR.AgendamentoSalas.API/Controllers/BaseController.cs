@@ -6,12 +6,23 @@ namespace MTR.AgendamentoSalas.API.Controllers;
 [ApiController]
 public abstract class BaseController : ControllerBase
 {
-    public IActionResult RetornoCustomizado<T>(ResponseDto<T> dados)
+    protected IActionResult RetornoCustomizado<T>(ResponseDto<T> dados)
     {
         if (dados.PossuiErros())
         {
             return BadRequest(dados);
         }
+
+        if (dados is null)
+        {
+            return NotFound(dados);
+        }
+
         return Ok(dados);
+    }
+
+    protected IActionResult RetornoCustomizadoSemConteudo()
+    {
+        return NoContent();
     }
 }

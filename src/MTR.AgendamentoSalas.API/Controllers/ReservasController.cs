@@ -9,6 +9,13 @@ public class ReservasController(IReservaService reservaService) : BaseController
 {
     private readonly IReservaService _reservaService = reservaService;
 
+    [HttpGet]
+    public async Task<IActionResult> ObterTudo()
+    {
+        var retorno = await _reservaService.Obter();
+        return RetornoCustomizado(retorno);
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> ObterPorId(int id)
     {
@@ -20,7 +27,6 @@ public class ReservasController(IReservaService reservaService) : BaseController
     public async Task<IActionResult> Inserir(Reserva reserva)
     {
         var retorno = await _reservaService.Inserir(reserva);
-
         return RetornoCustomizado(retorno);
     }
 
@@ -28,8 +34,18 @@ public class ReservasController(IReservaService reservaService) : BaseController
     public async Task<IActionResult> Atualizar(int id, Reserva reserva)
     {
         var retorno = await _reservaService.Atualizar(id, reserva);
-
         return RetornoCustomizado(retorno);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var retorno = await _reservaService.Excluir(id);
+        if (retorno.PossuiErros())
+        {
+            return RetornoCustomizado(retorno);
+        }
+        return RetornoCustomizadoSemConteudo();
     }
 
     [HttpGet("salas")]

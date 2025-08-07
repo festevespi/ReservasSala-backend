@@ -27,6 +27,16 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new() { Title = "Agendamento de Salas API", Version = "v1" });
 });
 
+var POLITICA_CORS = "PermitirTudo";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(POLITICA_CORS, policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -35,6 +45,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(POLITICA_CORS);
 
 app.UseHttpsRedirection();
 

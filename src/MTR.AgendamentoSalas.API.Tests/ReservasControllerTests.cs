@@ -48,9 +48,9 @@ public class ReservasControllerTests
     [Fact]
     public async Task Inserir_DeveAdicionarCorretamente_CasoNaoExistaDados()
     {
-        _reservaRepositorioMock.Setup(r => r.ObterTodos()).ReturnsAsync(new List<Reserva>());
+        _reservaRepositorioMock.Setup(r => r.Obter()).ReturnsAsync([]);
 
-        var reservas = await _reservaRepositorioMock.Object.ObterTodos();
+        var reservas = await _reservaRepositorioMock.Object.Obter();
 
         if (!reservas.Any())
         {

@@ -1,4 +1,5 @@
-﻿using MTR.AgendamentoSalas.API.Data;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using MTR.AgendamentoSalas.API.Data;
 using MTR.AgendamentoSalas.API.Dtos;
 using MTR.AgendamentoSalas.API.Models;
 
@@ -9,6 +10,15 @@ public class ReservaService(IReservaRepositorio reservaRepositorio) : IReservaSe
     private readonly IReservaRepositorio _reservaRepositorio = reservaRepositorio;
 
     private readonly string MENSAGEM_RESERVA = "O local {0} na sala {1} já possui reserva entre o periodo informado {2} e {3}";
+
+
+    public async Task<ResponseDto<List<Reserva>>> Obter()
+    {
+        return new ResponseDto<List<Reserva>>
+        {
+            Dados = await _reservaRepositorio.Obter()
+        };
+    }
 
     public async Task<ResponseDto<Reserva>> ObterPorId(int id)
     {
@@ -73,6 +83,22 @@ public class ReservaService(IReservaRepositorio reservaRepositorio) : IReservaSe
         await _reservaRepositorio.Atualizar(id, reservaLocalizada);
 
         retorno.Dados = reservaLocalizada;
+
+        return retorno;
+    }
+
+    public async Task<ResponseDto<Reserva>> Excluir(int id)
+    {
+        var retorno = new ResponseDto<Reserva>();
+
+        var reservaLocalizada = await _reservaRepositorio.ObterPorId(id);
+        if (reservaLocalizada == null)
+        {
+            retorno.AdicionaErro($"A reserva com id {id} não foi localizada.");
+            return retorno;
+        }
+
+        await _reservaRepositorio.Excluir(reservaLocalizada);
 
         return retorno;
     }

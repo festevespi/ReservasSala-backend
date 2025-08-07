@@ -7,6 +7,24 @@ public class ReservaRepositorio(AppDbContexto contextoDb) : IReservaRepositorio
 {
     private readonly AppDbContexto ContextoDb = contextoDb;
 
+    public async Task<List<Reserva>> Obter()
+    {
+        return await ContextoDb.Reservas
+            .AsNoTracking()
+            .Include(r => r.Sala)
+            .Include(r => r.Local)
+            .ToListAsync();
+    }
+
+    public async Task<Reserva?> ObterPorId(int id)
+    {
+        return await ContextoDb.Reservas
+            .AsNoTracking()
+            .Include(r => r.Sala)
+            .Include(r => r.Local)
+            .FirstOrDefaultAsync(r => r.Id == id);
+    }
+
     public async Task<Reserva?> Inserir(Reserva reserva)
     {
         ContextoDb.Salas.Attach(reserva.Sala);
@@ -23,22 +41,11 @@ public class ReservaRepositorio(AppDbContexto contextoDb) : IReservaRepositorio
         return reserva;
     }
 
-    public async Task<Reserva?> ObterPorId(int id)
+    public async Task<bool> Excluir(Reserva reserva)
     {
-        return await ContextoDb.Reservas
-            .AsNoTracking()
-            .Include(r => r.Sala)
-            .Include(r => r.Local)
-            .FirstOrDefaultAsync(r => r.Id == id);
-    }
-
-    public async Task<List<Reserva>> ObterTodos()
-    {
-        return await ContextoDb.Reservas
-            .AsNoTracking()
-            .Include(r => r.Sala)
-            .Include(r => r.Local)
-            .ToListAsync();
+        ContextoDb.Reservas.Remove(reserva);
+        await ContextoDb.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> ConsultaReservaConflitante(Reserva reserva, int id)
@@ -61,13 +68,6 @@ public class ReservaRepositorio(AppDbContexto contextoDb) : IReservaRepositorio
         var retornoValidacao = reservasConflitantes.Any();
 
         return retornoValidacao;
-    }
-
-    public async Task<bool> Excluir(Reserva reserva)
-    {
-        ContextoDb.Reservas.Remove(reserva);
-        await ContextoDb.SaveChangesAsync();
-        return true;
     }
 
     public Task<List<Local>> ObterTodosLocais()
