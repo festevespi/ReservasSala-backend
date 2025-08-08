@@ -13,6 +13,7 @@ public class ReservaRepositorio(AppDbContexto contextoDb) : IReservaRepositorio
             .AsNoTracking()
             .Include(r => r.Sala)
             .Include(r => r.Local)
+            .OrderByDescending(r => r.DataInicio)
             .ToListAsync();
     }
 
