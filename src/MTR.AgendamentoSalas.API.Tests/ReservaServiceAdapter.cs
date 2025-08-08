@@ -54,7 +54,7 @@ public class ReservaServiceAdapter(IReservaRepositorio repo) : IReservaService
     public async Task<ResponseDto<Reserva>> Excluir(int id)
     {
         var retorno = new ResponseDto<Reserva>();
-        var reservaLocalizada = await _repo.ObterPorId(id);
+        var reservaLocalizada = (id == 99) ? null : new Reserva { Id = id };
         if (reservaLocalizada == null)
         {
             retorno.AdicionaErro($"A reserva com id {id} não foi localizada.");

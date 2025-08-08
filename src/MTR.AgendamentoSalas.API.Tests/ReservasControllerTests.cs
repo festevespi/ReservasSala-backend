@@ -166,4 +166,30 @@ public class ReservasControllerTests
         Assert.True(result.PossuiErros());
         Assert.Contains("Quando pedir café lembre-se de informar a quantidade de pessoas. ;-)", result.Erros);
     }
+
+    [Fact]
+    public async Task Excluir_DeveExcluirCorretamente()
+    {
+        // Arrange
+
+        // Act
+        var result = await _reservaService.Excluir(1);
+
+        // Assert
+        Assert.False(result.PossuiErros());
+    }
+
+    [Fact]
+    public async Task Excluir_DeveOcorrerErro_ReservaNaoLocalizada()
+    {
+        // Arrange
+        var id = 99;
+
+        // Act
+        var result = await _reservaService.Excluir(id);
+
+        // Assert
+        Assert.True(result.PossuiErros());
+        Assert.Contains($"A reserva com id {id} não foi localizada.", result.Erros);
+    }
 }
